@@ -1,15 +1,18 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const authRouter = require('./src/controllers/google-auth');
 const protectedRouter = require('./src/controllers/protected-route');
 const passport = require('passport');
 const mongoose = require('mongoose');
+
 require('dotenv').config();
 
-mongoose.set('strictQuery', true);  // Add this line
-
 app.set('view engine', 'ejs');
+
+// Set Mongoose to use strictQuery
+mongoose.set('strictQuery', true);
 
 const connectToMongoDb = () => {
   mongoose
@@ -27,6 +30,10 @@ app.use(
     resave: false,
     saveUninitialized: true,
     secret: process.env.SESSION_SECRET,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: 'sessions',
+    }),
   })
 );
 
@@ -48,4 +55,4 @@ app.use('/auth/google', authRouter);
 app.use('/protected', protectedRouter);
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('App listening on port ' + port));
+app.listen(port, () => console.log(`App listening on port ${port}`));
