@@ -5,8 +5,9 @@ const authRouter = require('./src/controllers/google-auth');
 const protectedRouter = require('./src/controllers/protected-route');
 const passport = require('passport');
 const mongoose = require('mongoose');
-
 require('dotenv').config();
+
+mongoose.set('strictQuery', true);  // Add this line
 
 app.set('view engine', 'ejs');
 
